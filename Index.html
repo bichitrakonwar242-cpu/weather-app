@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather App</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #00c6ff, #0072ff);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .weather-card {
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      color: white;
+      text-align: center;
+      width: 300px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .search-box {
+      margin-bottom: 20px;
+    }
+
+    input {
+      padding: 10px;
+      border-radius: 20px;
+      border: none;
+      outline: none;
+      width: 70%;
+    }
+
+    button {
+      padding: 10px 15px;
+      border-radius: 20px;
+      border: none;
+      background: #ff6b6b;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .info-container {
+      margin-top: 20px;
+      justify-items: center;
+    }
+
+    .temp-circle {
+      font-size: 50px;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+
+    .details {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+      background: rgba(0, 0, 0, 0.1);
+      padding: 10px;
+      border-radius: 10px;
+    }
+
+    .detail-item p {
+      margin: 5px 0;
+      font-size: 14px;
+    }
+
+    .detail-item span {
+      font-weight: bold;
+      font-size: 18px;
+    }
+    .detail-item {
+      width: 150px;
+    }
+    .ld {
+      height: 30px;
+      width: 30px;
+      background: transparent;
+      border: 4px solid #7F7F7F5C;
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: load 1s infinite linear;
+      display: none;
+    }
+    @keyframes load {
+      to {transform: rotate(360deg);}
+    }
+  </style>
+</head>
+<body>
+
+  <div class="weather-card">
+    <div class="search-box">
+      <input type="text" id="cityInput" placeholder="Enter City Name">
+      <button id="searchBtn">GO</button>
+    </div>
+
+    <div class="info-container">
+      <h2 id="cityName">City Name</h2>
+      <div class="ld"></div>
+      <div class="temp-circle"><span id="temp">0</span>°C</div>
+      
+      <div class="details">
+        <div class="detail-item">
+          <p>Wind</p>
+          <span id="wind">0</span> km/h
+        </div>
+        <div class="detail-item">
+          <p>Humidity</p>
+          <span id="humidity">0</span>%
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let city = document.getElementById("cityInput");
+    let btn = document.getElementById("searchBtn");
+    let ctnam = document.getElementById("cityName");
+    let temp = document.getElementById("temp");
+    let wind = document.getElementById("wind");
+    let humidity = document.getElementById("humidity");
+    let ld = document.querySelector(".ld");
+    city.addEventListener("keydown", (e) => {
+      if (e.key == "Enter") btn.click();
+    });
+    btn.addEventListener("click", () => {
+      if (city.value == "") {
+        alert("Please Enter a name");
+      } else {
+        ctnam.style.display = "none";
+        ld.style.display = "block";
+        fetch(`https://wttr.in/${city.value}?format=j1`).then(res => res.json()).then(data => {
+          ctnam.style.display = "block";
+          ld.style.display = "none";
+          ctnam.innerText = city.value;
+          temp.innerText = data.current_condition[0].temp_C;
+          wind.innerText = data.current_condition[0].windspeedKmph;
+          humidity.innerText = data.current_condition[0].humidity;
+          city.value = "";
+          document.body.style.background = data.current_condition[0].temp_C > 20 ? "linear-gradient(135deg, #ffcc00, #ff4400)" : "linear-gradient(135deg, #00c6ff, #0072ff)";
+        }).catch(() => {ctnam.innerText = "Sorry! Please try again."; ctnam.style.display = " block"; ld.style.display = "none";});
+      }
+    });
+  </script>
+</body>
+</html>
